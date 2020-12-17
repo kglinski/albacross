@@ -32,6 +32,18 @@ object IpProcessor {
     IP(series(0), series(1), series(2), series(3))
   }
 
+  def increase(ip: IP, addend:Int): IP = {
+    if (ip.equals(MAX_IP)) {
+      return ip
+    }
+
+    var current = ip
+    for(i <- 0 until addend) {
+       current = increment(current)
+    }
+    current
+  }
+
   def decrement(ip: IP): IP = {
     if (ip.equals(MIN_IP)) {
       return ip

@@ -1,14 +1,19 @@
 import java.io.{BufferedWriter, FileWriter}
 
 import data_model.{IP, IpScope, IpScopeUnformatted}
+import generator.DataGenerator
 import org.apache.spark.sql.SparkSession
-import processor.{Comparator, IpIntersection, IpProcessor}
+import processor.{Comparator, FileProcessor, IpIntersection, IpProcessor}
 
 object Main {
 
   def main(args: Array[String]): Unit = {
 
+    val scopes = DataGenerator.generateIpScopes(3, 3, 100)
+    val sortedScopes = scopes.sortBy(ipScope => ipScope.start)
+
     val filePath = System.getProperty("user.dir") + "/src/main/resources/ip_script.txt"
+    FileProcessor.writeScopes(filePath, sortedScopes)
 
     val spark: SparkSession = SparkSession.builder()
       .master("local[*]")
@@ -47,12 +52,7 @@ object Main {
 
     val ipScopes = IpProcessor.assignScopes(rdd7.collect())
 
-    val writer = new BufferedWriter(new FileWriter(System.getProperty("user.dir") + "/src/main/resources/output.txt"))
-    for (scope <- ipScopes) {
-      writer.write(scope.toString)
-      writer.newLine()
-    }
-    writer.close()
+    FileProcessor.writeScopes(System.getProperty("user.dir") + "/src/main/resources/output.txt", ipScopes)
   }
 
 }
