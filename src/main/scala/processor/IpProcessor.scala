@@ -4,8 +4,14 @@ import data_model.{IP, IpScope}
 import scala.collection.mutable.ListBuffer
 
 object IpProcessor {
+  private val MIN_IP: IP = IP(0, 0, 0, 0)
+  private val MAX_IP: IP = IP(255, 255, 255, 255)
 
   def increment(ip: IP): IP = {
+    if (ip.equals(MAX_IP)) {
+      return ip
+    }
+
     var done: Boolean = false
     val series = new Array[Int](4)
 
@@ -27,6 +33,10 @@ object IpProcessor {
   }
 
   def decrement(ip: IP): IP = {
+    if (ip.equals(MIN_IP)) {
+      return ip
+    }
+
     var done: Boolean = false
     val series = new Array[Int](4)
 
