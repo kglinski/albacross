@@ -27,7 +27,9 @@ data generator without postgres-db
 
 In order to start the application you need to open it in developer environment (Intellij) then open Main.scala class, click using right mouse button inside class' body and select RUN 
 
-In order to achieve excpected expected results on extended-solution branch (optional scope) it's needed to create local PostgreSql database as described below 
+<h4> branch extended solution: </h4>
+
+In order to achieve expected results on extended-solution branch (optional scope) it's needed to create local PostgreSql database as described below 
 
 - PostgreSql installation 
 > https://www.postgresqltutorial.com/install-postgresql-linux/
@@ -45,6 +47,11 @@ In order to achieve excpected expected results on extended-solution branch (opti
 >
 >jdbc:postgresql://localhost:5432/ab-cross
 
+- run db script (resources/db-schema/database.sql) using pgAdmin
+
+ATTENTION:
+- once program finishes you need to delete entities from db
+> DELETE * FROM ip_scope
 
 ----
 
@@ -78,6 +85,8 @@ obsluga samego generatora bez bazy danych
 
 Aby uruchomic aplikacje nalezy otworzyc ja w srodowisku developerskim Intellij przejsc do klasy Main nastepnie po kliknieciu prawym przyciskiem myszy wewnatrz ciala tej klasy wybrac RUN 
 
+<h4> branch extended solution: </h4>
+
 W celu uzyskania oczekiwanego dzialania na branchu extended-solution (zakres dodatkowy) nalezy zbudowac lokalna baze danych postgres w podanych ponizej krokach:
 
 - instalacja postgreSql 
@@ -92,4 +101,10 @@ W celu uzyskania oczekiwanego dzialania na branchu extended-solution (zakres dod
 - utworzenie lokalnej bazy danych o nazwie `ab-cross` na domyslnym porcie `5432`
 > docelowo nasza sciezka do bazy danych powinna wygladac w ten sposob:
 >jdbc:postgresql://localhost:5432/ab-cross
+
+- wykonaj bazodanowy skrypt (resources/db-schema/database.sql) uzywajac pgAdmin
+
+UWAGA:
+- gdy program ukonczy dzialanie usun encje z bazy danych
+> DELETE * FROM ip_scope
 
