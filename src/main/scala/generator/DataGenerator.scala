@@ -9,7 +9,7 @@ import scala.util.Random
 object DataGenerator {
 
   def generateIpScopes(scopes: Int, nestedScopes: Int, numberScope: Int): List[IpScope] = {
-    var ipScopes = ListBuffer[IpScope]()
+    val ipScopes = ListBuffer[IpScope]()
     val series = new Array[Int](4)
 
     for (c <- 0 until scopes) {

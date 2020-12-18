@@ -1,8 +1,6 @@
-import java.io.{BufferedWriter, FileWriter}
-
 import data_model.{IP, IpScope, IpScopeUnformatted}
 import generator.DataGenerator
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{SaveMode, SparkSession}
 import processor.{Comparator, FileProcessor, IpIntersection, IpProcessor}
 
 object Main {
@@ -12,20 +10,37 @@ object Main {
     val scopes = DataGenerator.generateIpScopes(3, 3, 100)
     val sortedScopes = scopes.sortBy(ipScope => ipScope.start)
 
-    val filePath = System.getProperty("user.dir") + "/src/main/resources/ip_script.txt"
-    FileProcessor.writeScopes(filePath, sortedScopes)
-
     val spark: SparkSession = SparkSession.builder()
       .master("local[*]")
       .appName("Albacross")
       .getOrCreate()
 
-    val rdd = spark.sparkContext.textFile(filePath)
+    val postgres = spark.read
+      .format("jdbc")
+      .option("url", "jdbc:postgresql://localhost:5432/ab-cross")
+      .option("dbtable", "ip_scope")
+      .option("user", "postgres")
+      .option("password", "postgres")
+      .load()
 
-    val rdd1 = rdd.map(text => {
-      val extracted = text.split(",")
-      IpScopeUnformatted(extracted(0), extracted(1).trim)
-    })
+    val unformattedScopes = sortedScopes.map(scope => IpScopeUnformatted(scope.start.toString, scope.end.toString))
+    val rdd = spark.sparkContext.parallelize(unformattedScopes)
+
+    val df2 = spark.createDataFrame(rdd.collect()).toDF("start_ip", "end_ip")
+
+    df2.write
+      .mode(SaveMode.Append)
+      .format("jdbc")
+      .option("url", "jdbc:postgresql://localhost:5432/ab-cross")
+      .option("dbtable", "ip_scope")
+      .option("user", "postgres")
+      .option("password", "postgres")
+      .save()
+
+    postgres.createOrReplaceTempView("ip_scope")
+    val df3 = spark.sql("SELECT * FROM ip_scope")
+
+    val rdd1 = df3.rdd.map(e => IpScopeUnformatted(e.getString(1), e.getString(2)))
 
     val rdd2 = rdd1.map(ipScopeUnformatted =>
       IpScope(
